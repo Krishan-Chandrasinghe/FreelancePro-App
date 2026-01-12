@@ -24,6 +24,7 @@ export default function TasksPage() {
     const [loading, setLoading] = useState(true);
     const [selectedProject, setSelectedProject] = useState<string>("All");
     const [editingTask, setEditingTask] = useState<Task | null>(null);
+    const [deleteTaskId, setDeleteTaskId] = useState<string | null>(null);
     const [formData, setFormData] = useState({
         title: "",
         project: "",
@@ -104,15 +105,19 @@ export default function TasksPage() {
         }
     };
 
-    const handleDeleteTask = async (id: string) => {
-        if (!confirm("Are you sure you want to delete this task?")) return;
+    const handleDeleteTask = (id: string) => {
+        setDeleteTaskId(id);
+    };
+
+    const confirmDelete = async () => {
+        if (!deleteTaskId) return;
 
         const userInfo = localStorage.getItem("userInfo");
         if (!userInfo) return;
         const { token } = JSON.parse(userInfo);
 
         try {
-            const res = await fetch(`http://127.0.0.1:5001/api/tasks/${id}`, {
+            const res = await fetch(`http://127.0.0.1:5001/api/tasks/${deleteTaskId}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -120,11 +125,16 @@ export default function TasksPage() {
             });
 
             if (res.ok) {
-                setTasks(tasks.filter(t => t._id !== id));
+                setTasks(tasks.filter(t => t._id !== deleteTaskId));
+                setDeleteTaskId(null);
             }
         } catch (error) {
             console.error("Error deleting task", error);
         }
+    };
+
+    const cancelDelete = () => {
+        setDeleteTaskId(null);
     };
 
     const openAddModal = () => {
@@ -305,6 +315,34 @@ export default function TasksPage() {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {deleteTaskId && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                    <div className="w-full max-w-sm rounded-lg bg-white dark:bg-zinc-900 p-6 shadow-lg">
+                        <div className="mb-4">
+                            <h2 className="text-xl font-bold">Delete Task?</h2>
+                            <p className="text-sm text-gray-500 mt-2">
+                                Are you sure you want to delete this task? This action cannot be undone.
+                            </p>
+                        </div>
+                        <div className="flex justify-end gap-2">
+                            <button
+                                onClick={cancelDelete}
+                                className="px-4 py-2 text-sm font-medium rounded-md border hover:bg-gray-100 dark:hover:bg-zinc-800"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmDelete}
+                                className="px-4 py-2 text-sm font-medium rounded-md bg-red-600 text-white hover:bg-red-700"
+                            >
+                                Delete
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

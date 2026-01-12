@@ -14,6 +14,7 @@ export default function DashboardLayout({
     const pathname = usePathname();
     const router = useRouter();
     const [user, setUser] = useState<any>(null);
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
     const [timerActive, setTimerActive] = useState(false);
 
@@ -74,7 +75,11 @@ export default function DashboardLayout({
         };
     }, [router]);
 
-    const handleLogout = async () => {
+    const handleLogout = () => {
+        setShowLogoutConfirm(true);
+    };
+
+    const confirmLogout = async () => {
         const storedInfo = localStorage.getItem("userInfo");
         if (storedInfo) {
             const { token } = JSON.parse(storedInfo);
@@ -89,6 +94,10 @@ export default function DashboardLayout({
         }
         localStorage.removeItem("userInfo");
         router.push("/login");
+    };
+
+    const cancelLogout = () => {
+        setShowLogoutConfirm(false);
     };
 
     const navItems = [
@@ -176,6 +185,34 @@ export default function DashboardLayout({
                     {children}
                 </main>
             </div>
+
+            {/* Logout Confirmation Modal */}
+            {showLogoutConfirm && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                    <div className="w-full max-w-sm rounded-lg bg-white dark:bg-zinc-900 p-6 shadow-lg">
+                        <div className="mb-4">
+                            <h2 className="text-xl font-bold">Logout?</h2>
+                            <p className="text-sm text-gray-500 mt-2">
+                                Are you sure you want to logout? Any active timers will be stopped and saved.
+                            </p>
+                        </div>
+                        <div className="flex justify-end gap-2">
+                            <button
+                                onClick={cancelLogout}
+                                className="px-4 py-2 text-sm font-medium rounded-md border hover:bg-gray-100 dark:hover:bg-zinc-800"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmLogout}
+                                className="px-4 py-2 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
+                            >
+                                Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
