@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Project from "../models/Project";
+import Trial from "../models/Trial";
 
 // @desc    Create a project
 // @route   POST /api/projects
@@ -152,6 +153,10 @@ const deleteProject = async (req: any, res: Response) => {
   const project = await Project.findById(req.params.id);
 
   if (project && project.user.toString() === req.user._id.toString()) {
+    // Delete all related trial tracking data
+    await Trial.deleteMany({ project: project._id });
+
+    // Delete the project
     await project.deleteOne();
     res.json({ message: "Project removed" });
   } else {

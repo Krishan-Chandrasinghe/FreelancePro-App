@@ -34,6 +34,7 @@ export default function InvoicesPage() {
     const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("All");
+    const [deleteInvoiceId, setDeleteInvoiceId] = useState<string | null>(null);
     const dropdownRef = useRef<HTMLDivElement | null>(null);
     const router = useRouter();
 
@@ -99,25 +100,34 @@ export default function InvoicesPage() {
         }
     };
 
-    const handleDeleteInvoice = async (id: string) => {
-        if (!confirm("Are you sure you want to delete this invoice?")) return;
+    const handleDeleteInvoice = (id: string) => {
+        setDeleteInvoiceId(id);
+    };
+
+    const confirmDelete = async () => {
+        if (!deleteInvoiceId) return;
 
         const userInfo = localStorage.getItem("userInfo");
         if (!userInfo) return;
         const { token } = JSON.parse(userInfo);
 
         try {
-            const res = await fetch(`http://127.0.0.1:5001/api/invoices/${id}`, {
+            const res = await fetch(`http://127.0.0.1:5001/api/invoices/${deleteInvoiceId}`, {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` }
             });
 
             if (res.ok) {
                 fetchInvoices();
+                setDeleteInvoiceId(null);
             }
         } catch (error) {
             console.error("Error deleting invoice", error);
         }
+    };
+
+    const cancelDelete = () => {
+        setDeleteInvoiceId(null);
     };
 
     const handleSaveInvoice = async (invoiceData: any) => {
@@ -325,6 +335,34 @@ export default function InvoicesPage() {
             {previewInvoice && (
                 <div className="fixed left-[-9999px] top-0">
                     <InvoiceTemplate data={previewInvoice as any} />
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {deleteInvoiceId && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                    <div className="w-full max-w-sm rounded-lg bg-white dark:bg-zinc-900 p-6 shadow-lg">
+                        <div className="mb-4">
+                            <h2 className="text-xl font-bold">Delete Invoice?</h2>
+                            <p className="text-sm text-gray-500 mt-2">
+                                Are you sure you want to delete this invoice? This action cannot be undone.
+                            </p>
+                        </div>
+                        <div className="flex justify-end gap-2">
+                            <button
+                                onClick={cancelDelete}
+                                className="px-4 py-2 text-sm font-medium rounded-md border hover:bg-gray-100 dark:hover:bg-zinc-800"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmDelete}
+                                className="px-4 py-2 text-sm font-medium rounded-md bg-red-600 text-white hover:bg-red-700"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

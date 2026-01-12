@@ -47,6 +47,7 @@ export default function ExpensesPage() {
     const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("All");
+    const [deleteExpenseId, setDeleteExpenseId] = useState<string | null>(null);
 
     const [formData, setFormData] = useState({
         title: "",
@@ -118,24 +119,33 @@ export default function ExpensesPage() {
         }
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm("Are you sure you want to delete this expense?")) return;
+    const handleDelete = (id: string) => {
+        setDeleteExpenseId(id);
+    };
+
+    const confirmDelete = async () => {
+        if (!deleteExpenseId) return;
 
         const userInfo = localStorage.getItem("userInfo");
         if (!userInfo) return;
         const { token } = JSON.parse(userInfo);
 
         try {
-            const res = await fetch(`http://127.0.0.1:5001/api/expenses/${id}`, {
+            const res = await fetch(`http://127.0.0.1:5001/api/expenses/${deleteExpenseId}`, {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.ok) {
-                setExpenses(expenses.filter(e => e._id !== id));
+                setExpenses(expenses.filter(e => e._id !== deleteExpenseId));
+                setDeleteExpenseId(null);
             }
         } catch (error) {
             console.error("Error deleting expense", error);
         }
+    };
+
+    const cancelDelete = () => {
+        setDeleteExpenseId(null);
     };
 
     const openModal = (expense?: Expense) => {
@@ -417,6 +427,34 @@ export default function ExpensesPage() {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {deleteExpenseId && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                    <div className="w-full max-w-sm rounded-lg bg-white dark:bg-zinc-900 p-6 shadow-lg">
+                        <div className="mb-4">
+                            <h2 className="text-xl font-bold">Delete Expense?</h2>
+                            <p className="text-sm text-gray-500 mt-2">
+                                Are you sure you want to delete this expense? This action cannot be undone.
+                            </p>
+                        </div>
+                        <div className="flex justify-end gap-2">
+                            <button
+                                onClick={cancelDelete}
+                                className="px-4 py-2 text-sm font-medium rounded-md border hover:bg-gray-100 dark:hover:bg-zinc-800"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmDelete}
+                                className="px-4 py-2 text-sm font-medium rounded-md bg-red-600 text-white hover:bg-red-700"
+                            >
+                                Delete
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
