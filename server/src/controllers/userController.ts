@@ -2,6 +2,10 @@ import { Request, Response } from "express";
 import User from "../models/User";
 import generateToken from "../utils/generateToken";
 import bcrypt from "bcryptjs";
+import {
+  uploadToCloudinary,
+  deleteFromCloudinary,
+} from "../utils/cloudinaryUtils";
 
 // @desc    Register a new user
 // @route   POST /api/users
@@ -109,8 +113,19 @@ const updateUserProfile = async (req: any, res: Response) => {
     user.phone = req.body.phone || user.phone;
 
     if (req.file) {
-      // Store the URL to the image
-      user.profilePicture = `http://127.0.0.1:5001/uploads/profile/${req.file.filename}`;
+      // Upload new image to Cloudinary
+      const result = await uploadToCloudinary(
+        req.file.path,
+        "freelance-pro/profile_pictures"
+      );
+
+      // Delete old image from Cloudinary if it exists
+      if (user.cloudinary_id) {
+        await deleteFromCloudinary(user.cloudinary_id);
+      }
+
+      user.profilePicture = result.url;
+      user.cloudinary_id = result.publicId;
     }
 
     if (req.body.password) {
