@@ -2,8 +2,8 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 
-// Ensure upload directory exists
-const uploadDir = "public/uploads/profile";
+// Ensure temp upload directory exists
+const uploadDir = "public/uploads/temp";
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
@@ -22,17 +22,23 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req: any, file: any, cb: any) => {
-  if (file.mimetype.startsWith("image/")) {
+  if (
+    file.mimetype.startsWith("image/") ||
+    file.mimetype === "application/pdf"
+  ) {
     cb(null, true);
   } else {
-    cb(new Error("Not an image! Please upload only images."), false);
+    cb(
+      new Error("Invalid file type! Only images and PDFs are allowed."),
+      false
+    );
   }
 };
 
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit
+    fileSize: 10 * 1024 * 1024, // 10MB limit (increased for PDFs)
   },
   fileFilter: fileFilter,
 });

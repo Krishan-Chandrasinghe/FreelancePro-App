@@ -1,0 +1,21 @@
+{
+  "errors": {
+    "items.0.description": {
+      "name": "ValidatorError",
+      "message": "Path `description` is required.",
+      "properties": {
+        "message": "Path `description` is required.",
+        "type": "required",
+        "path": "description",
+        "value": "",
+        "length": 0
+      },
+      "kind": "required",
+      "path": "description",
+      "value": ""
+    }
+  },
+  "_message": "Invoice validation failed",
+  "name": "ValidationError",
+  "message": "Invoice validation failed: items.0.description: Path `description` is required."
+}

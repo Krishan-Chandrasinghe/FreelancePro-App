@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema(
     address: { type: String },
     phone: { type: String },
     profilePicture: { type: String },
+    cloudinary_id: { type: String },
   },
   { timestamps: true }
 );

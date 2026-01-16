@@ -44,6 +44,8 @@ const invoiceSchema = new mongoose.Schema(
       enum: ["Pending", "Complete", "Not Paid"],
       default: "Pending",
     },
+    fileUrl: { type: String },
+    cloudinary_id: { type: String },
   },
   { timestamps: true }
 );

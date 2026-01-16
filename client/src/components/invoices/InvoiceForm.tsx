@@ -220,6 +220,12 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ onClose, onSave }) => {
             return;
         }
 
+        const hasInvalidItems = items.some(item => !item.description.trim());
+        if (hasInvalidItems) {
+            alert("Please ensure all items have a description.");
+            return;
+        }
+
         setIsGenerating(true);
         try {
             await handleDownloadPDF();
