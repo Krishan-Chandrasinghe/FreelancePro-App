@@ -96,8 +96,8 @@ export default function ProjectsPage() {
 
         try {
             const [resProjects, resClients] = await Promise.all([
-                fetch("http://127.0.0.1:5001/api/projects", { headers: { Authorization: `Bearer ${token}` } }),
-                fetch("http://127.0.0.1:5001/api/clients", { headers: { Authorization: `Bearer ${token}` } })
+                fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects`, { headers: { Authorization: `Bearer ${token}` } }),
+                fetch(`${process.env.NEXT_PUBLIC_API_URL}/clients`, { headers: { Authorization: `Bearer ${token}` } })
             ]);
 
             if (resProjects.ok && resClients.ok) {
@@ -121,8 +121,8 @@ export default function ProjectsPage() {
 
         try {
             const url = editingProject
-                ? `http://127.0.0.1:5001/api/projects/${editingProject._id}`
-                : "http://127.0.0.1:5001/api/projects";
+                ? `${process.env.NEXT_PUBLIC_API_URL}/projects/${editingProject._id}`
+                : `${process.env.NEXT_PUBLIC_API_URL}/projects`;
 
             const method = editingProject ? "PUT" : "POST";
 
@@ -168,7 +168,7 @@ export default function ProjectsPage() {
         const { token } = JSON.parse(userInfo);
 
         try {
-            const res = await fetch(`http://127.0.0.1:5001/api/projects/${deleteProjectId}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${deleteProjectId}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -199,7 +199,7 @@ export default function ProjectsPage() {
         setProjects(projects.map(p => p._id === id ? { ...p, progress: newProgress } : p));
 
         try {
-            await fetch(`http://127.0.0.1:5001/api/projects/${id}`, {
+            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

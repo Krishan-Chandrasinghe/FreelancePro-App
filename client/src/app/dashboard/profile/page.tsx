@@ -23,7 +23,7 @@ export default function ProfilePage() {
         const { token } = JSON.parse(userInfo);
 
         try {
-            const res = await fetch("http://127.0.0.1:5001/api/users/profile", {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/profile`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.ok) {
@@ -53,7 +53,7 @@ export default function ProfilePage() {
         }
 
         try {
-            const res = await fetch("http://127.0.0.1:5001/api/users/profile", {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/profile`, {
                 method: "PUT",
                 headers: {
                     Authorization: `Bearer ${token}`

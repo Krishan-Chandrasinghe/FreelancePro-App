@@ -41,7 +41,7 @@ export default function ClientsPage() {
         const { token } = JSON.parse(userInfo);
 
         try {
-            const res = await fetch("http://127.0.0.1:5001/api/clients", {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/clients`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -70,8 +70,8 @@ export default function ClientsPage() {
 
         try {
             const url = editingClient
-                ? `http://127.0.0.1:5001/api/clients/${editingClient._id}`
-                : "http://127.0.0.1:5001/api/clients";
+                ? `${process.env.NEXT_PUBLIC_API_URL}/clients/${editingClient._id}`
+                : `${process.env.NEXT_PUBLIC_API_URL}/clients`;
 
             const method = editingClient ? "PUT" : "POST";
 
@@ -110,7 +110,7 @@ export default function ClientsPage() {
         const { token } = JSON.parse(userInfo);
 
         try {
-            const res = await fetch(`http://127.0.0.1:5001/api/clients/${deleteClientId}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/clients/${deleteClientId}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${token}`

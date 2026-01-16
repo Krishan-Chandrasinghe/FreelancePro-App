@@ -48,8 +48,8 @@ export default function TasksPage() {
 
         try {
             const [resTasks, resProjects] = await Promise.all([
-                fetch("http://127.0.0.1:5001/api/tasks", { headers: { Authorization: `Bearer ${token}` } }),
-                fetch("http://127.0.0.1:5001/api/projects", { headers: { Authorization: `Bearer ${token}` } })
+                fetch(`${process.env.NEXT_PUBLIC_API_URL}/tasks`, { headers: { Authorization: `Bearer ${token}` } }),
+                fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects`, { headers: { Authorization: `Bearer ${token}` } })
             ]);
 
             if (resTasks.ok && resProjects.ok) {
@@ -73,8 +73,8 @@ export default function TasksPage() {
 
         try {
             const url = editingTask
-                ? `http://127.0.0.1:5001/api/tasks/${editingTask._id}`
-                : "http://127.0.0.1:5001/api/tasks";
+                ? `${process.env.NEXT_PUBLIC_API_URL}/tasks/${editingTask._id}`
+                : `${process.env.NEXT_PUBLIC_API_URL}/tasks`;
 
             const method = editingTask ? "PUT" : "POST";
 
@@ -117,7 +117,7 @@ export default function TasksPage() {
         const { token } = JSON.parse(userInfo);
 
         try {
-            const res = await fetch(`http://127.0.0.1:5001/api/tasks/${deleteTaskId}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tasks/${deleteTaskId}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${token}`

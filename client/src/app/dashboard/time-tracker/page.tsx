@@ -56,7 +56,7 @@ export default function TimeTrackerPage() {
         const { token } = JSON.parse(userInfo);
 
         try {
-            const res = await fetch("http://127.0.0.1:5001/api/projects", {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -95,7 +95,7 @@ export default function TimeTrackerPage() {
         setProjects(projects.map(p => p._id === project._id ? { ...p, timerStartTime: now } : p));
 
         try {
-            await fetch(`http://127.0.0.1:5001/api/projects/${project._id}`, {
+            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${project._id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -145,7 +145,7 @@ export default function TimeTrackerPage() {
         const newTotalTime = (stopTimerProject.totalTimeSpent || 0) + elapsedTime;
 
         try {
-            const res = await fetch(`http://127.0.0.1:5001/api/projects/${stopTimerProject._id}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${stopTimerProject._id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

@@ -57,8 +57,8 @@ export default function TrialsPage() {
 
         try {
             const [resProjects, resTrials] = await Promise.all([
-                fetch("http://127.0.0.1:5001/api/projects", { headers: { Authorization: `Bearer ${token}` } }),
-                fetch("http://127.0.0.1:5001/api/trials", { headers: { Authorization: `Bearer ${token}` } })
+                fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects`, { headers: { Authorization: `Bearer ${token}` } }),
+                fetch(`${process.env.NEXT_PUBLIC_API_URL}/trials`, { headers: { Authorization: `Bearer ${token}` } })
             ]);
 
             if (resProjects.ok && resTrials.ok) {
@@ -82,7 +82,7 @@ export default function TrialsPage() {
         const { token } = JSON.parse(userInfo);
 
         try {
-            const res = await fetch("http://127.0.0.1:5001/api/trials", {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/trials`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

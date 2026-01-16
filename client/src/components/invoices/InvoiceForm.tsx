@@ -72,7 +72,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ onClose, onSave }) => {
         if (!userInfo) return;
         const { token } = JSON.parse(userInfo);
         try {
-            const res = await fetch(`http://127.0.0.1:5001/api/projects`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             if (res.ok) {
@@ -98,7 +98,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ onClose, onSave }) => {
         if (!userInfo) return;
         const { token } = JSON.parse(userInfo);
         try {
-            const res = await fetch("http://127.0.0.1:5001/api/clients", {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/clients`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             if (res.ok) {
@@ -115,7 +115,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ onClose, onSave }) => {
         if (!userInfo) return;
         const { token } = JSON.parse(userInfo);
         try {
-            const res = await fetch("http://127.0.0.1:5001/api/users/profile", {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/profile`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             if (res.ok) {
