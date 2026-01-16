@@ -72,7 +72,7 @@ export default function ExpensesPage() {
         const { token } = JSON.parse(userInfo);
 
         try {
-            const res = await fetch("http://127.0.0.1:5001/api/expenses", {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/expenses`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.ok) {
@@ -94,8 +94,8 @@ export default function ExpensesPage() {
 
         const method = editingExpense ? "PUT" : "POST";
         const url = editingExpense
-            ? `http://127.0.0.1:5001/api/expenses/${editingExpense._id}`
-            : "http://127.0.0.1:5001/api/expenses";
+            ? `${process.env.NEXT_PUBLIC_API_URL}/expenses/${editingExpense._id}`
+            : `${process.env.NEXT_PUBLIC_API_URL}/expenses`;
 
         try {
             const res = await fetch(url, {
@@ -131,7 +131,7 @@ export default function ExpensesPage() {
         const { token } = JSON.parse(userInfo);
 
         try {
-            const res = await fetch(`http://127.0.0.1:5001/api/expenses/${deleteExpenseId}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/expenses/${deleteExpenseId}`, {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` }
             });

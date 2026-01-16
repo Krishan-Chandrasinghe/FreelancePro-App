@@ -62,7 +62,7 @@ export default function InvoicesPage() {
         const { token } = JSON.parse(userInfo);
 
         try {
-            const res = await fetch("http://127.0.0.1:5001/api/invoices", {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/invoices`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.ok) {
@@ -82,7 +82,7 @@ export default function InvoicesPage() {
         const { token } = JSON.parse(userInfo);
 
         try {
-            const res = await fetch(`http://127.0.0.1:5001/api/invoices/${id}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/invoices/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -112,7 +112,7 @@ export default function InvoicesPage() {
         const { token } = JSON.parse(userInfo);
 
         try {
-            const res = await fetch(`http://127.0.0.1:5001/api/invoices/${deleteInvoiceId}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/invoices/${deleteInvoiceId}`, {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -136,7 +136,7 @@ export default function InvoicesPage() {
         const { token } = JSON.parse(userInfo);
 
         try {
-            const res = await fetch("http://127.0.0.1:5001/api/invoices", {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/invoices`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
