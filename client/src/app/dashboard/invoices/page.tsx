@@ -136,13 +136,43 @@ export default function InvoicesPage() {
         const { token } = JSON.parse(userInfo);
 
         try {
+            let body;
+            const headers: any = {
+                Authorization: `Bearer ${token}`
+            };
+
+            if (invoiceData.file) {
+                const formData = new FormData();
+                formData.append('client', invoiceData.client);
+                formData.append('invoiceNumber', invoiceData.invoiceNumber);
+                formData.append('date', invoiceData.date);
+                formData.append('dueDate', invoiceData.dueDate);
+                formData.append('subtotal', invoiceData.subtotal.toString());
+                formData.append('discount', invoiceData.discount.toString());
+                formData.append('taxRate', invoiceData.taxRate.toString());
+                formData.append('shipping', invoiceData.shipping.toString());
+                formData.append('totalAmount', invoiceData.totalAmount.toString());
+                formData.append('status', invoiceData.status);
+
+                if (invoiceData.project) formData.append('project', invoiceData.project);
+                if (invoiceData.notes) formData.append('notes', invoiceData.notes);
+
+                formData.append('items', JSON.stringify(invoiceData.items));
+                formData.append('freelancerDetails', JSON.stringify(invoiceData.freelancerDetails));
+                formData.append('clientDetails', JSON.stringify(invoiceData.clientDetails));
+
+                formData.append('file', invoiceData.file, `Invoice_${invoiceData.invoiceNumber}.pdf`);
+
+                body = formData;
+            } else {
+                body = JSON.stringify(invoiceData);
+                headers["Content-Type"] = "application/json";
+            }
+
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/invoices`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify(invoiceData)
+                headers: headers,
+                body: body
             });
 
             if (res.ok) {

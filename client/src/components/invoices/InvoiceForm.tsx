@@ -176,8 +176,8 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ onClose, onSave }) => {
         notes,
     };
 
-    const handleDownloadPDF = async () => {
-        return new Promise<void>((resolve) => {
+    const handleDownloadPDF = async (): Promise<Blob | null> => {
+        return new Promise((resolve) => {
             setShowPreview(true);
             // Wait for preview to render and images to load
             setTimeout(async () => {
@@ -206,9 +206,14 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ onClose, onSave }) => {
 
                     pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight, undefined, 'MEDIUM');
                     pdf.save(`Invoice_${invoiceNumber}.pdf`);
+
+                    const blob = pdf.output("blob");
+                    setShowPreview(false);
+                    resolve(blob);
+                } else {
+                    setShowPreview(false);
+                    resolve(null);
                 }
-                setShowPreview(false);
-                resolve();
             }, 1000); // Increased timeout to 1s for better consistency
         });
     };
@@ -228,11 +233,12 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ onClose, onSave }) => {
 
         setIsGenerating(true);
         try {
-            await handleDownloadPDF();
+            const pdfBlob = await handleDownloadPDF();
             onSave({
                 client: selectedClient._id,
                 ...invoiceData,
-                status: 'Pending'
+                status: 'Pending',
+                file: pdfBlob // Pass the generated PDF blob
             });
         } catch (error) {
             console.error("Error generating invoice", error);
