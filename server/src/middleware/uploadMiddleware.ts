@@ -1,9 +1,10 @@
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import os from "os";
 
 // Ensure temp upload directory exists
-const uploadDir = "public/uploads/temp";
+const uploadDir = path.join(os.tmpdir(), "freelance-pro-uploads");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
