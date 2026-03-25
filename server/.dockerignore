@@ -1,0 +1,8 @@
+dist
+.git
+.gitignore
+.env
+.env.sample
+node_modules
+npm-debug.log
+vercel.json
