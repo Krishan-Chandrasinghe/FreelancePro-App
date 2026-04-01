@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Users, FolderKanban, Clock, FileText, Receipt, CheckSquare, LogOut, Menu, X, Rocket, User } from "lucide-react";
+import { LayoutDashboard, Users, FolderKanban, Clock, FileText, Receipt, CheckSquare, LogOut, Menu, X, Rocket } from "lucide-react";
 
 export default function DashboardLayout({
     children,
