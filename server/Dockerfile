@@ -23,6 +23,6 @@ COPY --from=prod_deps --chown=backendUsr:backendGrp /app/node_modules ./node_mod
 COPY --from=builder --chown=backendUsr:backendGrp /app/dist ./dist
 
 USER backendUsr
-EXPOSE 5001
+EXPOSE 5000
 
 CMD ["node", "./dist/server.js"]

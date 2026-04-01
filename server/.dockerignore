@@ -3,6 +3,7 @@ dist
 .gitignore
 .env
 .env.sample
+.env.local
 node_modules
 npm-debug.log
 vercel.json
