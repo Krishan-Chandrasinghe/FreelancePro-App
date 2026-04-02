@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import {
-    Clock,
     AlertTriangle,
     CheckCircle,
     Plus,
@@ -11,7 +10,6 @@ import {
     Loader2,
     X,
     MessageSquare,
-    ChevronRight,
     Search
 } from "lucide-react";
 import { useRouter } from "next/navigation";

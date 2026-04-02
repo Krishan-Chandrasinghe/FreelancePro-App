@@ -108,7 +108,7 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({ initialData, onSave }) => {
                             <input
                                 className="w-full pl-10 pr-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-transparent focus:ring-2 focus:ring-primary/20 outline-none transition-all font-bold"
                                 value={formData.phone}
-                                placeholder="+94 70 291 0626"
+                                placeholder="+12 345 678 912"
                                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                             />
                         </div>

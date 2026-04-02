@@ -87,6 +87,6 @@ const connectDB = async () => {
 const PORT_NUM = Number(process.env.PORT || 5000);
 connectDB().then(() => {
   app.listen(PORT_NUM, "0.0.0.0", () => {
-    console.log(`Server running on port ${PORT_NUM} (0.0.0.0)`);
+    console.log(`Server running on port ${PORT_NUM}`);
   });
 });

@@ -1,0 +1,54 @@
+services:
+  mongo:
+    image: mongo:latest
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=pass123
+    networks:
+      - db_server
+    restart: always
+    volumes:
+      - freelancerpro_data:/data/db
+    
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    environment:
+      - PORT=5000
+      - CLIENT_URL=http://client:80
+      - MONGO_URI=mongodb://admin:pass123@mongo:27017/portfolio?authSource=admin
+      - JWT_SECRET=supersecretkey123
+      - JWT_EXPIRE=30d
+      - CLOUDINARY_CLOUD_NAME=duc6oiloe
+      - CLOUDINARY_API_KEY=213461397859844
+      - CLOUDINARY_API_SECRET=S-guglgxSdIumSkABLQQKOiQ7yQ
+      - CLOUDINARY_URL=cloudinary://213461397859844:S-guglgxSdIumSkABLQQKOiQ7yQ@duc6oiloe
+    restart: always
+    networks:
+      - db_server
+      - client_server
+    depends_on:
+      - mongo
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=/api
+    ports:
+      - 3000:80
+    depends_on:
+      - server
+    networks:
+      - client_server
+
+networks:
+  db_server:
+    driver: bridge
+  client_server:
+    driver: bridge
+
+volumes:
+  freelancerpro_data:
