@@ -34,7 +34,7 @@ jobs:
         with:
           context: ./server
           push: true
-          tags: ${{ id.meta-server.outputs.tags }}
+          tags: ${{ steps.meta-server.outputs.tags }}
 
       # Client image tags making
       - name: Extract Metadata for Client
@@ -54,4 +54,4 @@ jobs:
           push: true
           build-args: |
             NEXT_PUBLIC_API_URL=/api
-          tags: ${{ id.meta-client.outputs.tags }}
+          tags: ${{ steps.meta-client.outputs.tags }}
