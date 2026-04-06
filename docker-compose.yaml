@@ -2,31 +2,45 @@ services:
   mongo:
     image: mongo:latest
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=pass123
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
     networks:
-      - db_server
+      - db_server_ex
     restart: always
     volumes:
       - freelancerpro_data:/data/db
+
+  mongo-express:
+    image: mongo-express:latest
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - ME_CONFIG_MONGODB_SERVER=mongo
+    ports:
+      - 8081:8081
+    depends_on:
+      - mongo
+    restart: always
+    networks:
+      - db_server_ex
     
   server:
     build:
       context: ./server
       dockerfile: Dockerfile
     environment:
-      - PORT=5000
-      - CLIENT_URL=http://client:80
-      - MONGO_URI=mongodb://admin:pass123@mongo:27017/portfolio?authSource=admin
-      - JWT_SECRET=supersecretkey123
-      - JWT_EXPIRE=30d
-      - CLOUDINARY_CLOUD_NAME=duc6oiloe
-      - CLOUDINARY_API_KEY=213461397859844
-      - CLOUDINARY_API_SECRET=S-guglgxSdIumSkABLQQKOiQ7yQ
-      - CLOUDINARY_URL=cloudinary://213461397859844:S-guglgxSdIumSkABLQQKOiQ7yQ@duc6oiloe
+      - PORT=${PORT}
+      - CLIENT_URL=${CLIENT_URL}
+      - MONGO_URI=mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/portfolio?authSource=admin
+      - JWT_SECRET=supersecretkeyForJWT123${JWT_SECRET}
+      - JWT_EXPIRE=30d${JWT_EXPIRE}
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+      - CLOUDINARY_URL=cloudinary://${CLOUDINARY_API_KEY}:${CLOUDINARY_API_SECRET}@${CLOUDINARY_CLOUD_NAME}
     restart: always
     networks:
-      - db_server
+      - db_server_ex
       - client_server
     depends_on:
       - mongo
@@ -36,16 +50,17 @@ services:
       context: ./client
       dockerfile: Dockerfile
       args:
-        - NEXT_PUBLIC_API_URL=/api
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
     ports:
       - 3000:80
     depends_on:
       - server
+    restart: always
     networks:
       - client_server
 
 networks:
-  db_server:
+  db_server_ex:
     driver: bridge
   client_server:
     driver: bridge
