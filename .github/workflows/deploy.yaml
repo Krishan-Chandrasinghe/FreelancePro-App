@@ -81,6 +81,73 @@ jobs:
             echo "CLOUDINARY_URL=${{ secrets.CLOUDINARY_URL }}" >> .env
             echo "NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}" >> .env
 
+            echo "
+            services:
+              mongo:
+                image: mongo:latest
+                environment:
+                  - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+                  - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+                networks:
+                  - db_server_ex
+                restart: always
+                volumes:
+                  - freelancerpro_data:/data/db
+
+              mongo-express:
+                image: mongo-express:latest
+                environment:
+                  - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO_INITDB_ROOT_USERNAME}
+                  - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+                  - ME_CONFIG_MONGODB_SERVER=mongo
+                ports:
+                  - 8081:8081
+                depends_on:
+                  - mongo
+                restart: always
+                networks:
+                  - db_server_ex
+                
+              server:
+                images: krishanchandrasinghe/freelancerpro-server
+                environment:
+                  - PORT=${PORT}
+                  - CLIENT_URL=${CLIENT_URL}
+                  - MONGO_URI=mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/portfolio?authSource=admin
+                  - JWT_SECRET=${JWT_SECRET}
+                  - JWT_EXPIRE=${JWT_EXPIRE}
+                  - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+                  - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+                  - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+                  - CLOUDINARY_URL=cloudinary://${CLOUDINARY_API_KEY}:${CLOUDINARY_API_SECRET}@${CLOUDINARY_CLOUD_NAME}
+                restart: always
+                networks:
+                  - db_server_ex
+                  - client_server
+                depends_on:
+                  - mongo
+
+              client:
+                image: krishanchandrasinghe/freelancerpro-client
+                ports:
+                  - 80:80
+                depends_on:
+                  - server
+                restart: always
+                networks:
+                  - client_server
+
+            networks:
+              db_server_ex:
+                driver: bridge
+              client_server:
+                driver: bridge
+
+            volumes:
+              freelancerpro_data:
+            
+            " > compose.yaml
+
             sudo docker compose pull
             sudo docker compose up -d --remove-orphans
             sudo docker image prune -f
