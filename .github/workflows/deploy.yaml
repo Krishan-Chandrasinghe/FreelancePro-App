@@ -3,7 +3,7 @@ name: CI/CD Pipeline
 on:
   push:
     tags:
-      - 'v*' # v1.0, v1.1 වගේ tag එකක් push කරපු ගමන් මේක වැඩ කරනවා
+      - 'v*'
 
 jobs:
   build-and-push:
@@ -60,6 +60,26 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Create folder on EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AWS_HOST }}
+          username: ${{ secrets.AWS_USER }}
+          key: ${{ secrets.AWS_SSH_KEY }}
+          script: mkdir -p /home/ubuntu/freelancerpro-app
+
+      - name: Copy docker-compose.yaml to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.AWS_HOST }}
+          username: ${{ secrets.AWS_USER }}
+          key: ${{ secrets.AWS_SSH_KEY }}
+          source: "docker-compose.yaml"
+          target: "/home/ubuntu/freelancerpro-app"
+
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@master
         with:
@@ -67,7 +87,7 @@ jobs:
           username: ${{ secrets.AWS_USER }}
           key: ${{ secrets.AWS_SSH_KEY }}
           script: |
-            cd ~/Mega-App
+            cd /home/ubuntu/freelancerpro-app
 
             echo "PORT=${{ secrets.PORT }}" > .env
             echo "CLIENT_URL=${{ secrets.CLIENT_URL }}" >> .env
@@ -80,73 +100,6 @@ jobs:
             echo "CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}" >> .env
             echo "CLOUDINARY_URL=${{ secrets.CLOUDINARY_URL }}" >> .env
             echo "NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}" >> .env
-
-            echo "
-            services:
-              mongo:
-                image: mongo:latest
-                environment:
-                  - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-                  - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
-                networks:
-                  - db_server_ex
-                restart: always
-                volumes:
-                  - freelancerpro_data:/data/db
-
-              mongo-express:
-                image: mongo-express:latest
-                environment:
-                  - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO_INITDB_ROOT_USERNAME}
-                  - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
-                  - ME_CONFIG_MONGODB_SERVER=mongo
-                ports:
-                  - 8081:8081
-                depends_on:
-                  - mongo
-                restart: always
-                networks:
-                  - db_server_ex
-                
-              server:
-                image: krishanchandrasinghe/freelancerpro-server
-                environment:
-                  - PORT=${PORT}
-                  - CLIENT_URL=${CLIENT_URL}
-                  - MONGO_URI=mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/portfolio?authSource=admin
-                  - JWT_SECRET=${JWT_SECRET}
-                  - JWT_EXPIRE=${JWT_EXPIRE}
-                  - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
-                  - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
-                  - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
-                  - CLOUDINARY_URL=cloudinary://${CLOUDINARY_API_KEY}:${CLOUDINARY_API_SECRET}@${CLOUDINARY_CLOUD_NAME}
-                restart: always
-                networks:
-                  - db_server_ex
-                  - client_server
-                depends_on:
-                  - mongo
-
-              client:
-                image: krishanchandrasinghe/freelancerpro-client
-                ports:
-                  - 80:80
-                depends_on:
-                  - server
-                restart: always
-                networks:
-                  - client_server
-
-            networks:
-              db_server_ex:
-                driver: bridge
-              client_server:
-                driver: bridge
-
-            volumes:
-              freelancerpro_data:
-            
-            " > compose.yaml
 
             sudo docker-compose pull
             sudo docker-compose up -d --remove-orphans
